@@ -1,54 +1,53 @@
-import sys
-import pygame  # pylint: disable=import-error
-import cv2  # pylint: disable=import-error
+from sys import exit
+from pygame import quit, QUIT, KEYDOWN, MOUSEBUTTONDOWN
+from pygame.mouse import get_pos
+from pygame.display import set_mode, init, set_caption, flip
+from pygame.event import pump, wait, get
+from pygame.surfarray import blit_array
+from cv2 import resize
 
 class Window():
-  def __init__(self, w, h, caption="window", double=False, halve=False):
+  def __init__(self, w, h, caption = "window", double = False, halve = False):
     self.w = w
     self.h = h
-    pygame.display.init()
-    pygame.display.set_caption(caption)
+    init(), set_caption(caption)
     self.double = double
     self.halve = halve
     if self.double:
-      self.screen = pygame.display.set_mode((w*2, h*2))
+      self.screen = set_mode((w * 2, h * 2))
     elif self.halve:
-      self.screen = pygame.display.set_mode((w//2, h//2))
+      self.screen = set_mode((w // 2, h // 2))
     else:
-      self.screen = pygame.display.set_mode((w, h))
+      self.screen = set_mode((w, h))
 
   def draw(self, out):
-    pygame.event.pump()
+    pump()
     if self.double:
-      out2 = cv2.resize(out, (self.w*2, self.h*2))
-      pygame.surfarray.blit_array(self.screen, out2.swapaxes(0, 1))
+      blit_array(self.screen, resize(out, (self.w*2, self.h*2)).swapaxes(0, 1))
     elif self.halve:
-      out2 = cv2.resize(out, (self.w//2, self.h//2))
-      pygame.surfarray.blit_array(self.screen, out2.swapaxes(0, 1))
+      blit_array(self.screen, resize(out, (self.w//2, self.h//2)).swapaxes(0, 1))
     else:
-      pygame.surfarray.blit_array(self.screen, out.swapaxes(0, 1))
-    pygame.display.flip()
+      blit_array(self.screen, out.swapaxes(0, 1))
+    flip()
 
   def getkey(self):
-    while 1:
-      event = pygame.event.wait()
-      if event.type == pygame.QUIT:
-        pygame.quit()
-        sys.exit()
-      if event.type == pygame.KEYDOWN:
+    while True:
+      event = wait()
+      if event.type == QUIT:
+        quit(), exit()
+      if event.type == KEYDOWN:
         return event.key
 
   def getclick(self):
-    for event in pygame.event.get():
-      if event.type == pygame.MOUSEBUTTONDOWN:
-        mx, my = pygame.mouse.get_pos()
-        return mx, my
+    for event in get():
+      if event.type == MOUSEBUTTONDOWN:
+        return get_pos()
 
 if __name__ == "__main__":
-  import numpy as np
-  win = Window(200, 200, double=True)
-  img = np.zeros((200, 200, 3), np.uint8)
-  while 1:
+  from numpy import zeros, uint8
+  window = Window(200, 200, double = True)
+  image = zeros((200, 200, 3), uint8)
+  while True:
     print("draw")
-    img += 1
-    win.draw(img)
+    image += 1
+    window.draw(image)
