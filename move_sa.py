@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
-import os
-saimgs = sorted([x for x in os.listdir('imgs') if x.startswith("sa")])
-print(len(saimgs))
+from os import rename, listdir
 
-for i,x in enumerate(saimgs):
-  os.rename("imgs/"+x, "imgs/%4d_%s" % (5000+i,x[8:]))
-  os.rename("masks/"+x, "masks/%4d_%s" % (5000+i,x[8:]))
+if __name__ == "__main__":
+  sa_imgs = sorted([x for x in listdir("imgs") if x.startswith("sa")])
+  total = len(sa_imgs)
+  
+  for num, filename in enumerate(sa_imgs, start=1):
+    # shouldn't this be 04 and not just 4 -----VVVVV
+    print("\x1b[2K", f"Renamed {num/total:.0%} of the files", end='\r')
+    rename(f"imgs/{filename}", f"imgs/{5000+num:4}_{filename[8:]}")
+    rename(f"masks/{filename}", f"masks/{5000+num:4}_{filename[8:]}")
 
